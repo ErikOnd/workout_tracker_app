@@ -10,13 +10,16 @@ import {
 } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import getWorkoutById from "../services/getWorkoutById";
-import Swiper from "react-native-swiper";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 const EditWorkoutPage = () => {
   const [workoutData, setWorkoutData] = useState(null);
   const [completedExercises, setCompletedExercises] = useState([]);
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const route = useRoute();
   const { workoutId } = route.params;
+
+  console.log("workoutData:", workoutData);
 
   useEffect(() => {
     getData();
@@ -61,42 +64,63 @@ const EditWorkoutPage = () => {
     const updatedCompletedExercises = [...completedExercises];
     updatedCompletedExercises.push(exerciseIndex);
     setCompletedExercises(updatedCompletedExercises);
+
+    // check if all exercises are completed
+    if (updatedCompletedExercises.length === workoutData.exercises.length) {
+      Alert.alert(
+        "Workout done 🥳",
+        "You've completed all exercises for this workout"
+      );
+
+      //send updated workout here
+    }
   };
 
   const isExerciseCompleted = (exerciseIndex) => {
     return completedExercises.includes(exerciseIndex);
   };
 
+  const goToPreviousExercise = () => {
+    if (currentExerciseIndex > 0) {
+      setCurrentExerciseIndex(currentExerciseIndex - 1);
+    }
+  };
+
+  const goToNextExercise = () => {
+    if (currentExerciseIndex < workoutData.exercises.length - 1) {
+      setCurrentExerciseIndex(currentExerciseIndex + 1);
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.pageTitle}>Edit Workout</Text>
+      <Text style={styles.pageTitle}>{workoutData?.workout_name}</Text>
       {workoutData ? (
-        <Swiper
-          style={styles.swiperContainer}
-          dotColor="#C4C4C4"
-          activeDotColor="#FF5E5E"
-          paginationStyle={styles.paginationStyle}
-        >
-          {workoutData.exercises.map((exercise, exerciseIndex) => (
-            <View
-              key={exercise._id}
-              style={[
-                styles.exerciseContainer,
-                isExerciseCompleted(exerciseIndex) && styles.completedExercise,
-              ]}
-            >
-              <Text style={styles.exerciseName}>{exercise.name}</Text>
-              <Image
-                source={{ uri: exercise.gifUrl }}
-                style={styles.gifImage}
-              />
-              <View style={styles.tableContainer}>
-                <View style={styles.tableRow}>
-                  <Text style={styles.tableHeader}>Set</Text>
-                  <Text style={styles.tableHeader}>Reps</Text>
-                  <Text style={styles.tableHeader}>Weight</Text>
-                </View>
-                {exercise.sets.map((set, setIndex) => (
+        <>
+          <View
+            style={
+              isExerciseCompleted(currentExerciseIndex)
+                ? styles.exerciseContainerCompleted
+                : styles.exerciseContainer
+            }
+          >
+            <Text style={styles.exerciseName}>
+              {workoutData.exercises[currentExerciseIndex].name}
+            </Text>
+            <Image
+              source={{
+                uri: workoutData.exercises[currentExerciseIndex].gifUrl,
+              }}
+              style={styles.gifImage}
+            />
+            <View style={styles.tableContainer}>
+              <View style={styles.tableRow}>
+                <Text style={styles.tableHeader}>Set</Text>
+                <Text style={styles.tableHeader}>Reps</Text>
+                <Text style={styles.tableHeader}>Weight</Text>
+              </View>
+              {workoutData.exercises[currentExerciseIndex].sets.map(
+                (set, setIndex) => (
                   <View key={set._id} style={styles.tableRow}>
                     <Text style={styles.tableData}>{setIndex + 1}</Text>
                     <TextInput
@@ -104,7 +128,7 @@ const EditWorkoutPage = () => {
                       keyboardType="numeric"
                       value={set.repetitions.toString()}
                       onChangeText={(reps) =>
-                        handleRepsChange(exerciseIndex, setIndex, reps)
+                        handleRepsChange(currentExerciseIndex, setIndex, reps)
                       }
                     />
                     <TextInput
@@ -112,23 +136,45 @@ const EditWorkoutPage = () => {
                       keyboardType="numeric"
                       value={set.weight_lifted.toString()}
                       onChangeText={(weight) =>
-                        handleWeightChange(exerciseIndex, setIndex, weight)
+                        handleWeightChange(
+                          currentExerciseIndex,
+                          setIndex,
+                          weight
+                        )
                       }
                     />
                   </View>
-                ))}
-              </View>
-              {!isExerciseCompleted(exerciseIndex) && (
-                <TouchableOpacity
-                  style={styles.finishedButton}
-                  onPress={() => handleFinishedExercise(exerciseIndex)}
-                >
-                  <Text style={styles.finishedButtonText}>Done</Text>
-                </TouchableOpacity>
+                )
               )}
             </View>
-          ))}
-        </Swiper>
+            {!isExerciseCompleted(currentExerciseIndex) && (
+              <TouchableOpacity
+                style={styles.finishedButton}
+                onPress={() => handleFinishedExercise(currentExerciseIndex)}
+              >
+                <Text style={styles.finishedButtonText}>Done</Text>
+              </TouchableOpacity>
+            )}
+          </View>
+          <View style={styles.navigationContainer}>
+            <TouchableOpacity
+              style={styles.navigationButton}
+              onPress={goToPreviousExercise}
+              disabled={currentExerciseIndex === 0}
+            >
+              <Icon name="chevron-left" size={24} color="#FFF" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.navigationButton}
+              onPress={goToNextExercise}
+              disabled={
+                currentExerciseIndex === workoutData.exercises.length - 1
+              }
+            >
+              <Icon name="chevron-right" size={24} color="#FFF" />
+            </TouchableOpacity>
+          </View>
+        </>
       ) : (
         <Text>Loading...</Text>
       )}
@@ -136,23 +182,20 @@ const EditWorkoutPage = () => {
   );
 };
 
+// Styles...
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F5F5F5",
+    backgroundColor: "#36363c",
     padding: 16,
   },
   pageTitle: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 16,
-    color: "#333",
-  },
-  swiperContainer: {
-    flex: 1,
-  },
-  paginationStyle: {
-    bottom: 16,
+    color: "#FF8A00",
+    textAlign: "center",
   },
   exerciseContainer: {
     flex: 1,
@@ -171,8 +214,22 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 3,
   },
-  completedExercise: {
-    backgroundColor: "#DFF0D8",
+  exerciseContainerCompleted: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#797e80", // This is the color when an exercise is done
+    borderRadius: 8,
+    padding: 16,
+    marginVertical: 8,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 3,
   },
   exerciseName: {
     fontSize: 18,
@@ -197,6 +254,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 8,
+    paddingHorizontal: 16,
   },
   tableHeader: {
     flex: 1,
@@ -204,12 +262,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#333",
     textAlign: "center",
+    justifyContent: "center",
   },
   tableData: {
     flex: 1,
     fontSize: 16,
     color: "#333",
     textAlign: "center",
+    justifyContent: "center",
   },
   textInput: {
     flex: 1,
@@ -223,12 +283,28 @@ const styles = StyleSheet.create({
   },
   finishedButton: {
     marginTop: 16,
-    backgroundColor: "#FF5E5E",
+    backgroundColor: "#FF8A00",
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
   },
   finishedButtonText: {
+    color: "#FFF",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  navigationContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 16,
+  },
+  navigationButton: {
+    backgroundColor: "#FF8A00", // Changed background color
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+  },
+  navigationButtonText: {
     color: "#FFF",
     fontWeight: "bold",
     textAlign: "center",

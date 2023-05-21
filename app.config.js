@@ -4,4 +4,7 @@ module.exports = {
   extra: {
     apiUrl: process.env.API_URL,
   },
+  ios: {
+    bundleIdentifier: "my.workouttracker.app",
+  },
 };

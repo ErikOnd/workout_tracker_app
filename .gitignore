@@ -19,3 +19,5 @@ web-build/
 
 /.env
 node_modules/
+
+/ios
