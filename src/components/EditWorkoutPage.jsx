@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
+  ScrollView,
 } from "react-native";
 import { useRoute } from "@react-navigation/native";
 import getWorkoutById from "../services/getWorkoutById";
@@ -123,7 +124,7 @@ const EditWorkoutPage = () => {
                 }}
                 style={styles.gifImage}
               />
-              <View style={styles.tableContainer}>
+              <ScrollView style={styles.tableContainer}>
                 <View style={styles.tableRow}>
                   <Text style={[styles.tableHeader, styles.tableHeaderCenter]}>
                     Set
@@ -164,7 +165,7 @@ const EditWorkoutPage = () => {
                     </View>
                   )
                 )}
-              </View>
+              </ScrollView>
               {!isExerciseCompleted(currentExerciseIndex) && (
                 <TouchableOpacity
                   style={styles.finishedButton}
@@ -307,7 +308,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#CCC",
     borderRadius: 4,
-    marginLeft: 25, // Add margin to create space between the input fields
+    marginLeft: 25,
     textAlign: "center",
     color: "white",
   },
@@ -326,7 +327,7 @@ const styles = StyleSheet.create({
   navigationContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginTop: 16,
+    marginBottom: 16,
   },
   navigationButton: {
     backgroundColor: "#FF8A00",
