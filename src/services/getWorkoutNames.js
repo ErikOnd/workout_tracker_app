@@ -1,6 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { REACT_APP_API_URL } from "@env";
-const accessToken = "";
 const getWorkoutsNames = async () => {
   try {
     const res = await fetch(`${REACT_APP_API_URL}/workouts/me/names`, {

@@ -11,6 +11,7 @@ import {
 import { useRoute } from "@react-navigation/native";
 import getWorkoutById from "../services/getWorkoutById";
 import Icon from "react-native-vector-icons/FontAwesome";
+import updateWorkout from "../services/updateWorkout";
 
 const EditWorkoutPage = () => {
   const [workoutData, setWorkoutData] = useState(null);
@@ -18,8 +19,6 @@ const EditWorkoutPage = () => {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const route = useRoute();
   const { workoutId } = route.params;
-
-  console.log("workoutData:", workoutData);
 
   useEffect(() => {
     getData();
@@ -72,7 +71,7 @@ const EditWorkoutPage = () => {
         "You've completed all exercises for this workout"
       );
 
-      //send updated workout here
+      updateWorkout(workoutData, workoutData._id);
     }
   };
 
@@ -218,7 +217,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#797e80", // This is the color when an exercise is done
+    backgroundColor: "#caffcf", // This is the color when an exercise is done
     borderRadius: 8,
     padding: 16,
     marginVertical: 8,
