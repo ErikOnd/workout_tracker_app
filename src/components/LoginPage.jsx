@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
   logo: {
     width: 200,
     resizeMode: "contain",
+    marginTop: 50,
   },
   button: {
     alignItems: "center",

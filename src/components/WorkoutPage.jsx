@@ -54,6 +54,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#FF8A00",
     fontWeight: "800",
+    marginTop: 50,
   },
   workoutContainer: {
     backgroundColor: "#fff",

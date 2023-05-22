@@ -195,6 +195,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     color: "#FF8A00",
     textAlign: "center",
+    marginTop: 50,
   },
   exerciseContainer: {
     flex: 1,

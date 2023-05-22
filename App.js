@@ -12,7 +12,11 @@ const Stack = createStackNavigator();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false, // Hide the header for all screens
+        }}
+      >
         <Stack.Screen name="Login" component={LoginPage} />
         <Stack.Screen name="WorkoutPage" component={WorkoutPage} />
         <Stack.Screen name="EditWorkoutPage" component={EditWorkoutPage} />
