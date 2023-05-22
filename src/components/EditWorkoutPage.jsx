@@ -12,6 +12,7 @@ import { useRoute } from "@react-navigation/native";
 import getWorkoutById from "../services/getWorkoutById";
 import Icon from "react-native-vector-icons/FontAwesome";
 import updateWorkout from "../services/updateWorkout";
+import { useNavigation } from "@react-navigation/native";
 
 const EditWorkoutPage = () => {
   const [workoutData, setWorkoutData] = useState(null);
@@ -19,6 +20,7 @@ const EditWorkoutPage = () => {
   const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
   const route = useRoute();
   const { workoutId } = route.params;
+  const navigation = useNavigation();
 
   useEffect(() => {
     getData();
@@ -68,10 +70,17 @@ const EditWorkoutPage = () => {
     if (updatedCompletedExercises.length === workoutData.exercises.length) {
       Alert.alert(
         "Workout done 🥳",
-        "You've completed all exercises for this workout"
+        "You've completed all exercises for this workout",
+        [
+          {
+            text: "OK",
+            onPress: () => {
+              updateWorkout(workoutData, workoutData._id);
+              navigation.goBack(); // Navigate back to previous page
+            },
+          },
+        ]
       );
-
-      updateWorkout(workoutData, workoutData._id);
     }
   };
 
@@ -96,65 +105,69 @@ const EditWorkoutPage = () => {
       <Text style={styles.pageTitle}>{workoutData?.workout_name}</Text>
       {workoutData ? (
         <>
-          <View
-            style={
-              isExerciseCompleted(currentExerciseIndex)
-                ? styles.exerciseContainerCompleted
-                : styles.exerciseContainer
-            }
-          >
-            <Text style={styles.exerciseName}>
-              {workoutData.exercises[currentExerciseIndex].name}
-            </Text>
-            <Image
-              source={{
-                uri: workoutData.exercises[currentExerciseIndex].gifUrl,
-              }}
-              style={styles.gifImage}
-            />
-            <View style={styles.tableContainer}>
-              <View style={styles.tableRow}>
-                <Text style={styles.tableHeader}>Set</Text>
-                <Text style={styles.tableHeader}>Reps</Text>
-                <Text style={styles.tableHeader}>Weight</Text>
+          {isExerciseCompleted(currentExerciseIndex) ? (
+            <View style={styles.exerciseContainerCheckmark}>
+              <Icon name="check" size={50} color="#FFF" />
+              <Text style={styles.exerciseName}>
+                {workoutData.exercises[currentExerciseIndex].name}
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.exerciseContainer}>
+              <Text style={styles.exerciseName}>
+                {workoutData.exercises[currentExerciseIndex].name}
+              </Text>
+              <Image
+                source={{
+                  uri: workoutData.exercises[currentExerciseIndex].gifUrl,
+                }}
+                style={styles.gifImage}
+              />
+              <View style={styles.tableContainer}>
+                <View style={styles.tableRow}>
+                  <Text style={styles.tableHeader}>Set</Text>
+                  <Text style={styles.tableHeader}>Reps</Text>
+                  <Text style={styles.tableHeader}>Weight</Text>
+                </View>
+                {workoutData.exercises[currentExerciseIndex].sets.map(
+                  (set, setIndex) => (
+                    <View key={set._id} style={styles.tableRow}>
+                      <Text style={styles.tableData}>{setIndex + 1}</Text>
+                      <TextInput
+                        style={styles.textInput}
+                        keyboardType="numeric"
+                        value={set.repetitions.toString()}
+                        onChangeText={(reps) =>
+                          handleRepsChange(currentExerciseIndex, setIndex, reps)
+                        }
+                      />
+                      <TextInput
+                        style={styles.textInput}
+                        keyboardType="numeric"
+                        value={set.weight_lifted.toString()}
+                        onChangeText={(weight) =>
+                          handleWeightChange(
+                            currentExerciseIndex,
+                            setIndex,
+                            weight
+                          )
+                        }
+                      />
+                    </View>
+                  )
+                )}
               </View>
-              {workoutData.exercises[currentExerciseIndex].sets.map(
-                (set, setIndex) => (
-                  <View key={set._id} style={styles.tableRow}>
-                    <Text style={styles.tableData}>{setIndex + 1}</Text>
-                    <TextInput
-                      style={styles.textInput}
-                      keyboardType="numeric"
-                      value={set.repetitions.toString()}
-                      onChangeText={(reps) =>
-                        handleRepsChange(currentExerciseIndex, setIndex, reps)
-                      }
-                    />
-                    <TextInput
-                      style={styles.textInput}
-                      keyboardType="numeric"
-                      value={set.weight_lifted.toString()}
-                      onChangeText={(weight) =>
-                        handleWeightChange(
-                          currentExerciseIndex,
-                          setIndex,
-                          weight
-                        )
-                      }
-                    />
-                  </View>
-                )
+              {!isExerciseCompleted(currentExerciseIndex) && (
+                <TouchableOpacity
+                  style={styles.finishedButton}
+                  onPress={() => handleFinishedExercise(currentExerciseIndex)}
+                >
+                  <Text style={styles.finishedButtonText}>Done</Text>
+                </TouchableOpacity>
               )}
             </View>
-            {!isExerciseCompleted(currentExerciseIndex) && (
-              <TouchableOpacity
-                style={styles.finishedButton}
-                onPress={() => handleFinishedExercise(currentExerciseIndex)}
-              >
-                <Text style={styles.finishedButtonText}>Done</Text>
-              </TouchableOpacity>
-            )}
-          </View>
+          )}
+
           <View style={styles.navigationContainer}>
             <TouchableOpacity
               style={styles.navigationButton}
@@ -181,8 +194,6 @@ const EditWorkoutPage = () => {
   );
 };
 
-// Styles...
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -201,24 +212,14 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#FFFFFF",
     borderRadius: 8,
     padding: 16,
     marginVertical: 8,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 3,
   },
-  exerciseContainerCompleted: {
+  exerciseContainerCheckmark: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#caffcf", // This is the color when an exercise is done
     borderRadius: 8,
     padding: 16,
     marginVertical: 8,
@@ -235,7 +236,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 16,
-    color: "#333",
+    color: "white",
     textAlign: "center",
   },
   gifImage: {
@@ -251,7 +252,7 @@ const styles = StyleSheet.create({
   },
   tableRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
     alignItems: "center",
     marginBottom: 8,
     paddingHorizontal: 16,
@@ -260,14 +261,14 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     fontWeight: "bold",
-    color: "#333",
+    color: "white",
     textAlign: "center",
     justifyContent: "center",
   },
   tableData: {
     flex: 1,
     fontSize: 16,
-    color: "#333",
+    color: "white",
     textAlign: "center",
     justifyContent: "center",
   },
@@ -280,6 +281,7 @@ const styles = StyleSheet.create({
     borderColor: "#CCC",
     borderRadius: 4,
     textAlign: "center",
+    color: "white",
   },
   finishedButton: {
     marginTop: 16,
@@ -299,7 +301,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   navigationButton: {
-    backgroundColor: "#FF8A00", // Changed background color
+    backgroundColor: "#FF8A00",
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
