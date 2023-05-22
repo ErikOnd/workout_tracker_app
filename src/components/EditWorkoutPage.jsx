@@ -125,14 +125,22 @@ const EditWorkoutPage = () => {
               />
               <View style={styles.tableContainer}>
                 <View style={styles.tableRow}>
-                  <Text style={styles.tableHeader}>Set</Text>
-                  <Text style={styles.tableHeader}>Reps</Text>
-                  <Text style={styles.tableHeader}>Weight</Text>
+                  <Text style={[styles.tableHeader, styles.tableHeaderCenter]}>
+                    Set
+                  </Text>
+                  <Text style={[styles.tableHeader, styles.tableHeaderCenter]}>
+                    Reps
+                  </Text>
+                  <Text style={[styles.tableHeader, styles.tableHeaderCenter]}>
+                    Weight
+                  </Text>
                 </View>
                 {workoutData.exercises[currentExerciseIndex].sets.map(
                   (set, setIndex) => (
                     <View key={set._id} style={styles.tableRow}>
-                      <Text style={styles.tableData}>{setIndex + 1}</Text>
+                      <Text style={[styles.tableData, styles.tableDataCenter]}>
+                        {setIndex + 1}
+                      </Text>
                       <TextInput
                         style={styles.textInput}
                         keyboardType="numeric"
@@ -170,14 +178,25 @@ const EditWorkoutPage = () => {
 
           <View style={styles.navigationContainer}>
             <TouchableOpacity
-              style={styles.navigationButton}
+              style={[
+                styles.navigationButton,
+                { opacity: currentExerciseIndex === 0 ? 0.5 : 1 },
+              ]}
               onPress={goToPreviousExercise}
               disabled={currentExerciseIndex === 0}
             >
               <Icon name="chevron-left" size={24} color="#FFF" />
             </TouchableOpacity>
             <TouchableOpacity
-              style={styles.navigationButton}
+              style={[
+                styles.navigationButton,
+                {
+                  opacity:
+                    currentExerciseIndex === workoutData.exercises.length - 1
+                      ? 0.5
+                      : 1,
+                },
+              ]}
               onPress={goToNextExercise}
               disabled={
                 currentExerciseIndex === workoutData.exercises.length - 1
@@ -252,10 +271,13 @@ const styles = StyleSheet.create({
   },
   tableRow: {
     flexDirection: "row",
-    justifyContent: "center",
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 8,
     paddingHorizontal: 16,
+    backgroundColor: "#2C2C33",
+    paddingVertical: 8,
+    borderRadius: 8,
   },
   tableHeader: {
     flex: 1,
@@ -263,14 +285,19 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "white",
     textAlign: "center",
-    justifyContent: "center",
+  },
+  tableHeaderCenter: {
+    alignItems: "center",
   },
   tableData: {
     flex: 1,
     fontSize: 16,
     color: "white",
     textAlign: "center",
-    justifyContent: "center",
+  },
+  tableDataCenter: {
+    alignItems: "center",
+    marginLeft: 18,
   },
   textInput: {
     flex: 1,
@@ -280,6 +307,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#CCC",
     borderRadius: 4,
+    marginLeft: 25, // Add margin to create space between the input fields
     textAlign: "center",
     color: "white",
   },
