@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: "center",
+    backgroundColor: "#36363c",
   },
   heading: {
     fontSize: 24,
@@ -108,6 +109,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     borderRadius: 10,
+    color: "white",
   },
   errorMessage: {
     color: "red",
