@@ -115,15 +115,6 @@ const EditWorkoutPage = () => {
             </View>
           ) : (
             <View style={styles.exerciseContainer}>
-              <Text style={styles.exerciseName}>
-                {workoutData.exercises[currentExerciseIndex].name}
-              </Text>
-              <Image
-                source={{
-                  uri: workoutData.exercises[currentExerciseIndex].gifUrl,
-                }}
-                style={styles.gifImage}
-              />
               <ScrollView style={styles.tableContainer}>
                 <View style={styles.tableRow}>
                   <Text style={[styles.tableHeader, styles.tableHeaderCenter]}>
@@ -166,6 +157,16 @@ const EditWorkoutPage = () => {
                   )
                 )}
               </ScrollView>
+              <Text style={styles.exerciseName}>
+                {workoutData.exercises[currentExerciseIndex].name}
+              </Text>
+              <Image
+                source={{
+                  uri: workoutData.exercises[currentExerciseIndex].gifUrl,
+                }}
+                style={styles.gifImage}
+              />
+
               {!isExerciseCompleted(currentExerciseIndex) && (
                 <TouchableOpacity
                   style={styles.finishedButton}
@@ -268,7 +269,8 @@ const styles = StyleSheet.create({
   tableContainer: {
     flex: 1,
     width: "100%",
-    marginTop: 16,
+    maxHeight: 250,
+    marginBottom: 30,
   },
   tableRow: {
     flexDirection: "row",
