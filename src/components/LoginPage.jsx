@@ -11,6 +11,7 @@ import googleBtn from "../../assets/google-signin.png";
 import logo from "../../assets/logo.png";
 import userLogin from "../services/userLogin";
 import { useNavigation } from "@react-navigation/native";
+import { REACT_APP_API_URL } from "@env";
 
 const LoginPage = () => {
   const navigation = useNavigation();
@@ -26,8 +27,7 @@ const LoginPage = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleLogin = async (event) => {
-    event.preventDefault();
+  const handleLogin = async () => {
     const path = await userLogin(formData);
     if (path) {
       navigation.navigate("WorkoutPage");
@@ -36,8 +36,9 @@ const LoginPage = () => {
     }
   };
 
-  const handleLoginWithGoogle = () => {
-    // Handle login with Google logic here
+  const handleGoogleLogin = () => {
+    const url = `${REACT_APP_API_URL}/users/googleLogin`;
+    Linking.openURL(url);
   };
 
   return (
@@ -75,15 +76,14 @@ const LoginPage = () => {
           <Text style={styles.errorMessage}>Email or Password incorrect</Text>
         )}
 
-        <View style={styles.imageContainer}>
+        {/*    <View style={styles.imageContainer}>
           <Image
             source={googleBtn}
             style={styles.googleButton}
-            onPress={handleLoginWithGoogle}
+            onPress={handleGoogleLogin}
           />
-        </View>
-
-        {/* Other components and logic */}
+        </View> */}
+        {/* google login for next release*/}
       </View>
     </View>
   );
@@ -118,7 +118,6 @@ const styles = StyleSheet.create({
   imageContainer: {
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 50,
   },
   googleButton: {
     width: 200,

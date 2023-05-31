@@ -135,7 +135,7 @@ const EditWorkoutPage = () => {
                       </Text>
                       <TextInput
                         style={styles.textInput}
-                        keyboardType="numeric"
+                        keyboardType="numbers-and-punctuation"
                         value={set.repetitions.toString()}
                         onChangeText={(reps) =>
                           handleRepsChange(currentExerciseIndex, setIndex, reps)
@@ -143,7 +143,7 @@ const EditWorkoutPage = () => {
                       />
                       <TextInput
                         style={styles.textInput}
-                        keyboardType="numeric"
+                        keyboardType="numbers-and-punctuation"
                         value={set.weight_lifted.toString()}
                         onChangeText={(weight) =>
                           handleWeightChange(
