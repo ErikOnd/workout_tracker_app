@@ -50,6 +50,7 @@ const LoginPage = () => {
       <View style={styles.formContainer}>
         <TextInput
           style={styles.input}
+          placeholderTextColor="#999"
           placeholder="Enter email"
           value={formData.email}
           onChangeText={(text) => handleInputChange("email", text)}
@@ -59,6 +60,7 @@ const LoginPage = () => {
 
         <TextInput
           style={styles.input}
+          placeholderTextColor="#999"
           placeholder="Password"
           secureTextEntry
           value={formData.password}
